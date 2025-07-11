@@ -92,6 +92,12 @@
             transition: all 0.3s ease;
             position: relative;
         }
+
+.contact-item p {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
         
         .nav-item:last-child {
             border-right: none;
@@ -574,6 +580,156 @@
                 border-bottom: none;
             }
         }
+.tooltip {
+    position: relative;
+    cursor: pointer;
+}
+
+.tooltip-content {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid #00ff00;
+    border-radius: 8px;
+    padding: 15px;
+    width: 300px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.tooltip:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: #00ff00;
+}
+
+.network-stats {
+    color: #00ff00;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.network-stats h4 {
+    margin-bottom: 10px;
+    color: #00ff00;
+    text-align: center;
+    font-size: 14px;
+}
+
+.stat-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 2px 0;
+    border-bottom: 1px solid #003300;
+}
+
+.stat-label {
+    color: #00cc00;
+}
+
+.stat-value {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.network-bar {
+    width: 100%;
+    height: 8px;
+    background: #003300;
+    border: 1px solid #00ff00;
+    margin: 5px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.network-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00, #00cc00);
+    animation: networkPulse 2s infinite;
+}
+
+.network-fill.download {
+    width: 75%;
+}
+
+.network-fill.upload {
+    width: 45%;
+}
+
+@keyframes networkPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+.blink-text {
+    animation: networkBlink 1s infinite;
+}
+
+@keyframes networkBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.5; }
+}
+.os-stats {
+    color: #00ff00;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.os-stats h4 {
+    margin-bottom: 10px;
+    color: #00ff00;
+    text-align: center;
+    font-size: 14px;
+}
+
+.os-bar {
+    width: 100%;
+    height: 8px;
+    background: #003300;
+    border: 1px solid #00ff00;
+    margin: 5px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.os-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00, #00cc00);
+    animation: osPulse 2s infinite;
+}
+
+.os-fill.memory {
+    width: 65%;
+}
+
+.os-fill.storage {
+    width: 78%;
+}
+
+@keyframes osPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+.os-icon {
+    display: inline-block;
+    margin-right: 5px;
+}
     </style>
 </head>
 <body>
@@ -665,17 +821,19 @@
         </div>
         
         <div class="navigation">
-            <div class="nav-item active" data-section="about">
-                <strong>F1</strong> QUEM EU SOU
-            </div>
-            <div class="nav-item" data-section="projects">
-                <strong>F2</strong> PROJETOS
-            </div>
-            <div class="nav-item" data-section="experience">
-                <strong>F3</strong> EXPERIÊNCIA
-            </div>
-        </div>
-        
+    <div class="nav-item active" data-section="about">
+        <strong>F1</strong> QUEM EU SOU
+    </div>
+    <div class="nav-item" data-section="projects">
+        <strong>F2</strong> PROJETOS
+    </div>
+    <div class="nav-item" data-section="courses">
+        <strong>F3</strong> CURSOS
+    </div>
+    <div class="nav-item" data-section="experience">
+        <strong>F4</strong> EXPERIÊNCIA
+    </div>
+</div>        
         <div class="content-area">
             <div class="section active" id="about">
                 <div class="profile-section">
@@ -709,13 +867,13 @@ If you're looking for someone who can help you secure and optimize your network'
                         <h4>EMAIL</h4>
                         <p>ricardofragadesousa@gmail.com</p>
                     </div>
-                    <div class="contact-item">
+                     <div class="contact-item">
                         <h4>TELEFONE</h4>
-                        <p>+55 (21) 99703-7674</p>
+                        <p><a href="https://wa.me/5521997037674?text=Olá%2C%20estou%20entrando%20em%20contato%20através%20da%20sua%20página%20pessoal%20de%20portifólio." target="_blank" rel="noopener noreferrer" style="color: #00ff00; text-decoration: none; word-break: break-all;">+55(21)99703-7674</a></p>
                     </div>
                    <div class="contact-item">
                         <h4>LINKEDIN</h4>
-                        <p><a href="https://www.linkedin.com/in/ricardofragadesousa/" target="_blank" rel="noopener noreferrer" style="color: #00ff00; text-decoration: underline; word-break: break-all;">https://www.linkedin.com/in/ricardofragadesousa/</a></p>
+                        <p><a href="https://www.linkedin.com/in/ricardofragadesousa/" target="_blank" rel="noopener noreferrer" style="color: #00ff00; text-decoration: none; word-break: break-all;">https://www.linkedin.com/in/ricardofragadesousa/</a></p>
                     </div>
                     <div class="contact-item">
                         <h4>xx</h4>
@@ -756,7 +914,26 @@ If you're looking for someone who can help you secure and optimize your network'
                     </div>
                 </div>
             </div>
-            
+            <div class="section" id="courses">
+    <h2>>>> CARREGANDO CURSOS...</h2>
+    <div class="timeline">
+        <div class="timeline-item">
+            <h3>Nome do Curso 1</h3>
+            <div class="date">2024 | Carga Horária: 40h</div>
+            <p><strong>Instituição:</strong> Nome da Instituição</p>
+            <p>Descrição do curso e conhecimentos adquiridos...</p>
+        </div>
+        
+        <div class="timeline-item">
+            <h3>Nome do Curso 2</h3>
+            <div class="date">2023 | Carga Horária: 60h</div>
+            <p><strong>Instituição:</strong> Nome da Instituição</p>
+            <p>Descrição do curso e conhecimentos adquiridos...</p>
+        </div>
+        
+        <!-- Adicione mais cursos seguindo o mesmo padrão -->
+    </div>
+</div>
             <div class="section" id="experience">
                 <h2>>>> HISTÓRICO DE EXPERIÊNCIAS...</h2>
                 <div class="timeline">
@@ -819,22 +996,112 @@ If you're looking for someone who can help you secure and optimize your network'
         
         <div class="bios-footer">
             <div class="system-status">
-                <div class="status-item">
-                    <div class="status-led"></div>
-                    <span>SISTEMA OPERACIONAL</span>
-                </div>
-                <div class="status-item">
-                    <div class="status-led"></div>
-                    <span>REDE CONECTADA</span>
-                </div>
+                <div class="status-item tooltip">
+    <div class="status-led"></div>
+    <span>SISTEMA OPERACIONAL</span>
+    <div class="tooltip-content">
+        <div class="os-stats">
+            <h4>>>> INFORMAÇÕES DO SISTEMA <<<</h4>
+            <div class="stat-line">
+                <span class="stat-label">Sistema:</span>
+                <span class="stat-value" id="osName">Detectando...</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Versão:</span>
+                <span class="stat-value" id="osVersion">Detectando...</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Arquitetura:</span>
+                <span class="stat-value" id="osArch">Detectando...</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Navegador:</span>
+                <span class="stat-value" id="browserName">Detectando...</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Resolução:</span>
+                <span class="stat-value" id="screenRes">Detectando...</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Memória (est.):</span>
+                <span class="stat-value" id="memoryInfo">8GB</span>
+            </div>
+            <div class="os-bar">
+                <div class="os-fill memory"></div>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Armazenamento:</span>
+                <span class="stat-value">78% utilizado</span>
+            </div>
+            <div class="os-bar">
+                <div class="os-fill storage"></div>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Uptime:</span>
+                <span class="stat-value" id="uptime">00:00:00</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Status:</span>
+                <span class="stat-value blink-text">FUNCIONANDO</span>
+            </div>
+        </div>
+    </div>
+</div>
+               <div class="status-item tooltip">
+    <div class="status-led"></div>
+    <span>REDE CONECTADA</span>
+    <div class="tooltip-content">
+        <div class="network-stats">
+            <h4>>>> CONSUMO DE REDE <<<</h4>
+            <div class="stat-line">
+                <span class="stat-label">Interface:</span>
+                <span class="stat-value">Ethernet (eth0)</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">IP Address:</span>
+                <span class="stat-value">192.168.1.100</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Status:</span>
+                <span class="stat-value blink-text">ONLINE</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Download:</span>
+                <span class="stat-value">750 Mbps</span>
+            </div>
+            <div class="network-bar">
+                <div class="network-fill download"></div>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Upload:</span>
+                <span class="stat-value">450 Mbps</span>
+            </div>
+            <div class="network-bar">
+                <div class="network-fill upload"></div>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Latência:</span>
+                <span class="stat-value">12ms</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Pacotes:</span>
+                <span class="stat-value">TX: 1.2M | RX: 2.1M</span>
+            </div>
+            <div class="stat-line">
+                <span class="stat-label">Tempo Online:</span>
+                <span class="stat-value">72:15:33</span>
+            </div>
+        </div>
+    </div>
+</div>
                 <div class="status-item">
                     <div class="status-led"></div>
                     <span>DADOS CARREGADOS</span>
                 </div>
             </div>
             <div style="margin-top: 10px; font-size: 12px;">
-                Pressione F1-F3 para navegar | ESC para sair | CTRL+ALT+DEL para reiniciar
-            </div>
+    Pressione F1-F4 para navegar | ESC para sair | CTRL+ALT+DEL para reiniciar
+</div>
         </div>
     </div>
     
@@ -971,24 +1238,28 @@ If you're looking for someone who can help you secure and optimize your network'
         // Navegação por teclado
         document.addEventListener('keydown', (e) => {
             switch(e.key) {
-                case 'F1':
-                    e.preventDefault();
-                    document.querySelector('[data-section="about"]').click();
-                    break;
-                case 'F2':
-                    e.preventDefault();
-                    document.querySelector('[data-section="projects"]').click();
-                    break;
-                case 'F3':
-                    e.preventDefault();
-                    document.querySelector('[data-section="experience"]').click();
-                    break;
-                case 'Escape':
-                    if (confirm('Deseja realmente sair do sistema?')) {
-                        window.close();
-                    }
-                    break;
-            }
+    case 'F1':
+        e.preventDefault();
+        document.querySelector('[data-section="about"]').click();
+        break;
+    case 'F2':
+        e.preventDefault();
+        document.querySelector('[data-section="projects"]').click();
+        break;
+    case 'F3':
+        e.preventDefault();
+        document.querySelector('[data-section="courses"]').click();
+        break;
+    case 'F4':
+        e.preventDefault();
+        document.querySelector('[data-section="experience"]').click();
+        break;
+    case 'Escape':
+        if (confirm('Deseja realmente sair do sistema?')) {
+            window.close();
+        }
+        break;
+}
         });
         
         // Efeito de digitação para títulos
@@ -1035,6 +1306,161 @@ If you're looking for someone who can help you secure and optimize your network'
                 initializeMainContent();
             }
         });
+function updateNetworkStats() {
+    const downloadFill = document.querySelector('.network-fill.download');
+    const uploadFill = document.querySelector('.network-fill.upload');
+    
+    if (downloadFill && uploadFill) {
+        // Simular variação nos valores
+        const downloadPercent = Math.floor(Math.random() * 30) + 60; // 60-90%
+        const uploadPercent = Math.floor(Math.random() * 40) + 30;   // 30-70%
+        
+        downloadFill.style.width = downloadPercent + '%';
+        uploadFill.style.width = uploadPercent + '%';
+    }
+}
+
+// Atualizar a cada 3 segundos
+setInterval(updateNetworkStats, 3000);
+// Detectar informações do sistema operacional
+function detectSystemInfo() {
+    const userAgent = navigator.userAgent;
+    const platform = navigator.platform;
+    
+    // Detectar sistema operacional
+    let osName = 'Sistema Desconhecido';
+    let osVersion = 'Versão Desconhecida';
+    let releaseDate = '';
+    
+    if (userAgent.includes('Windows NT 10.0')) {
+        osName = 'Windows 10/11';
+        if (userAgent.includes('Windows NT 10.0; Win64; x64')) {
+            osVersion = 'Windows 11 (Build 22000+)';
+            releaseDate = 'Outubro 2021';
+        } else {
+            osVersion = 'Windows 10 (Build 19041+)';
+            releaseDate = 'Julho 2015';
+        }
+    } else if (userAgent.includes('Windows NT 6.3')) {
+        osName = 'Windows 8.1';
+        osVersion = 'Windows 8.1 (Build 9600)';
+        releaseDate = 'Outubro 2013';
+    } else if (userAgent.includes('Windows NT 6.2')) {
+        osName = 'Windows 8';
+        osVersion = 'Windows 8 (Build 9200)';
+        releaseDate = 'Outubro 2012';
+    } else if (userAgent.includes('Windows NT 6.1')) {
+        osName = 'Windows 7';
+        osVersion = 'Windows 7 (Build 7601)';
+        releaseDate = 'Outubro 2009';
+    } else if (userAgent.includes('Mac OS X')) {
+        osName = 'macOS';
+        const macVersion = userAgent.match(/Mac OS X ([\d_]+)/);
+        if (macVersion) {
+            osVersion = `macOS ${macVersion[1].replace(/_/g, '.')}`;
+            releaseDate = 'Versão Apple';
+        }
+    } else if (userAgent.includes('Linux')) {
+        osName = 'Linux';
+        osVersion = 'Distribuição Linux';
+        releaseDate = 'Open Source';
+    } else if (userAgent.includes('Android')) {
+        osName = 'Android';
+        const androidVersion = userAgent.match(/Android ([\d.]+)/);
+        if (androidVersion) {
+            osVersion = `Android ${androidVersion[1]}`;
+            releaseDate = 'Google Mobile OS';
+        }
+    } else if (userAgent.includes('iPhone') || userAgent.includes('iPad')) {
+        osName = 'iOS';
+        const iosVersion = userAgent.match(/OS ([\d_]+)/);
+        if (iosVersion) {
+            osVersion = `iOS ${iosVersion[1].replace(/_/g, '.')}`;
+            releaseDate = 'Apple Mobile OS';
+        }
+    }
+    
+    // Detectar navegador
+    let browserName = 'Navegador Desconhecido';
+    if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
+        browserName = 'Google Chrome';
+    } else if (userAgent.includes('Firefox')) {
+        browserName = 'Mozilla Firefox';
+    } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+        browserName = 'Safari';
+    } else if (userAgent.includes('Edg')) {
+        browserName = 'Microsoft Edge';
+    } else if (userAgent.includes('Opera')) {
+        browserName = 'Opera';
+    }
+    
+    // Detectar arquitetura
+    let architecture = 'Desconhecida';
+    if (userAgent.includes('Win64') || userAgent.includes('x86_64')) {
+        architecture = '64-bit';
+    } else if (userAgent.includes('Win32') || userAgent.includes('i386')) {
+        architecture = '32-bit';
+    } else if (userAgent.includes('ARM')) {
+        architecture = 'ARM';
+    }
+    
+    // Atualizar elementos
+    const osNameElement = document.getElementById('osName');
+    const osVersionElement = document.getElementById('osVersion');
+    const osArchElement = document.getElementById('osArch');
+    const browserNameElement = document.getElementById('browserName');
+    const screenResElement = document.getElementById('screenRes');
+    const memoryInfoElement = document.getElementById('memoryInfo');
+    
+    if (osNameElement) osNameElement.textContent = osName;
+    if (osVersionElement) osVersionElement.textContent = osVersion + (releaseDate ? ` (${releaseDate})` : '');
+    if (osArchElement) osArchElement.textContent = architecture;
+    if (browserNameElement) browserNameElement.textContent = browserName;
+    if (screenResElement) screenResElement.textContent = `${screen.width}x${screen.height}`;
+    
+    // Estimar memória baseada no hardware
+    const memoryEstimate = navigator.deviceMemory ? `${navigator.deviceMemory}GB` : 'Não disponível';
+    if (memoryInfoElement) memoryInfoElement.textContent = memoryEstimate;
+}
+
+// Atualizar uptime simulado
+function updateUptime() {
+    const uptimeElement = document.getElementById('uptime');
+    if (uptimeElement) {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        uptimeElement.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+}
+
+// Atualizar barras de uso do sistema
+function updateSystemBars() {
+    const memoryFill = document.querySelector('.os-fill.memory');
+    const storageFill = document.querySelector('.os-fill.storage');
+    
+    if (memoryFill && storageFill) {
+        // Simular variação no uso de memória e armazenamento
+        const memoryPercent = Math.floor(Math.random() * 20) + 55; // 55-75%
+        const storagePercent = Math.floor(Math.random() * 15) + 70; // 70-85%
+        
+        memoryFill.style.width = memoryPercent + '%';
+        storageFill.style.width = storagePercent + '%';
+    }
+}
+
+// Inicializar detecção do sistema
+document.addEventListener('DOMContentLoaded', () => {
+    detectSystemInfo();
+    updateUptime();
+    
+    // Atualizar uptime a cada segundo
+    setInterval(updateUptime, 1000);
+    
+    // Atualizar barras a cada 5 segundos
+    setInterval(updateSystemBars, 5000);
+});
     </script>
 </body>
 </html>
