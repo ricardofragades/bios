@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIOS Resume - Terminal Interface</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #000;
+            color: #00ff00;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: #00ff00;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.7;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .bios-container {
+            min-height: 100vh;
+            padding: 20px;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 255, 0, 0.05) 0%, transparent 50%),
+                linear-gradient(0deg, #000 0%, #001100 100%);
+            position: relative;
+        }
+        
+        .bios-header {
+            border: 2px solid #00ff00;
+            padding: 10px;
+            margin-bottom: 20px;
+            background: rgba(0, 255, 0, 0.05);
+            text-align: center;
+            position: relative;
+        }
+        
+        .bios-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #00ff00; }
+            to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+        }
+        
+        .system-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .navigation {
+            display: flex;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .nav-item {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            border-right: 1px solid #00ff00;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item:last-child {
+            border-right: none;
+        }
+        
+        .nav-item:hover {
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .nav-item.active {
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #00ff00;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-item.active::before {
+            transform: scaleX(1);
+        }
+        
+        .content-area {
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.02);
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .profile-section {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .profile-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 3px solid #00ff00;
+            background-image: url('https://i.ibb.co/D0JpnjC/minhafoto.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(0, 255, 0, 0.1) 50%,
+                transparent 70%
+            );
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .profile-text {
+            padding: 20px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .profile-text h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #00ff00;
+        }
+        
+        .profile-text p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #00ff00, transparent);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+            border-radius: 5px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -32px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        
+        .timeline-item h3 {
+            color: #00ff00;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-item .date {
+            color: #00aa00;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-item p {
+            line-height: 1.5;
+        }
+        
+        .bios-footer {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin-top: 20px;
+            background: rgba(0, 255, 0, 0.05);
+            text-align: center;
+        }
+        
+        .system-status {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-led {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff00, transparent);
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateY(-2px); }
+            100% { transform: translateY(100vh); }
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .contact-item {
+            border: 1px solid #00ff00;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            text-align: center;
+        }
+        
+        .contact-item h4 {
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+        
+        /* Boot Screen Styles */
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .boot-container {
+            width: 90%;
+            max-width: 1000px;
+            height: 80%;
+            border: 2px solid #555;
+            background: #000;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .boot-header {
+            border-bottom: 1px solid #555;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .boot-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00ffff;
+            margin-bottom: 5px;
+        }
+        
+        .boot-version {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .boot-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .boot-section {
+            margin-bottom: 30px;
+        }
+        
+        .boot-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+        }
+        
+        .boot-label {
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .boot-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .boot-status.wait {
+            background: #666;
+            color: #fff;
+        }
+        
+        .boot-status.ok {
+            background: #0a5d0a;
+            color: #00ff00;
+            animation: statusGlow 1s ease-in-out;
+        }
+        
+        .boot-status.error {
+            background: #5d0a0a;
+            color: #ff0000;
+        }
+        
+        @keyframes statusGlow {
+            0% { box-shadow: 0 0 5px transparent; }
+            50% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); }
+            100% { box-shadow: 0 0 5px transparent; }
+        }
+        
+        .memory-test {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #333;
+            background: #111;
+        }
+        
+        .memory-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .memory-bar {
+            width: 100%;
+            height: 20px;
+            background: #222;
+            border: 1px solid #555;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .memory-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00cc00);
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        .memory-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .memory-info {
+            color: #fff;
+            font-size: 12px;
+        }
+        
+        .boot-messages {
+            flex: 1;
+            background: #000;
+            padding: 15px;
+            border: 1px solid #333;
+            overflow-y: auto;
+            max-height: 150px;
+        }
+        
+        .message-line {
+            color: #00ff00;
+            font-size: 12px;
+            margin-bottom: 2px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .boot-footer {
+            border-top: 1px solid #555;
+            padding-top: 15px;
+            margin-top: 20px;
+        }
+        
+        .boot-keys {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        
+        .boot-keys span {
+            color: #00ffff;
+        }
+        
+        .boot-copyright {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .boot-container {
+                width: 95%;
+                height: 90%;
+                padding: 15px;
+            }
+            
+            .boot-title {
+                font-size: 16px;
+            }
+            
+            .boot-line {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .boot-keys {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .profile-section {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .profile-image {
+                margin: 0 auto;
+            }
+            
+            .bios-title {
+                font-size: 18px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+            
+            .nav-item {
+                border-right: none;
+                border-bottom: 1px solid #00ff00;
+            }
+            
+            .nav-item:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor"></div>
+    <div class="scan-line"></div>
+    
+    <!-- Boot Sequence Screen -->
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-container">
+            <div class="boot-header">
+                <div class="boot-title">ASUS UEFI BIOS Utility - Advanced Mode</div>
+                <div class="boot-version">Version 2.4.1 | Build Date: 07/11/2025</div>
+            </div>
+            
+            <div class="boot-content">
+                <div class="boot-section">
+                    <div class="boot-line">
+                        <span class="boot-label">Initializing System...</span>
+                        <span class="boot-status" id="initStatus">[ WAIT ]</span>
+                    </div>
+                    <div class="boot-line">
+                        <span class="boot-label">CPU: Intel Core i7-13700K @ 3.4GHz</span>
+                        <span class="boot-status" id="cpuStatus">[ WAIT ]</span>
+                    </div>
+                    <div class="boot-line">
+                        <span class="boot-label">Memory Test: 32GB DDR5-5600</span>
+                        <span class="boot-status" id="memStatus">[ WAIT ]</span>
+                    </div>
+                    <div class="boot-line">
+                        <span class="boot-label">Storage: NVMe SSD 1TB</span>
+                        <span class="boot-status" id="storageStatus">[ WAIT ]</span>
+                    </div>
+                    <div class="boot-line">
+                        <span class="boot-label">Graphics: NVIDIA RTX 4080</span>
+                        <span class="boot-status" id="gpuStatus">[ WAIT ]</span>
+                    </div>
+                    <div class="boot-line">
+                        <span class="boot-label">Network: Intel I225-V Ethernet</span>
+                        <span class="boot-status" id="networkStatus">[ WAIT ]</span>
+                    </div>
+                    <div class="boot-line">
+                        <span class="boot-label">USB Devices: 4 device(s) detected</span>
+                        <span class="boot-status" id="usbStatus">[ WAIT ]</span>
+                    </div>
+                </div>
+                
+                <div class="memory-test" id="memoryTest">
+                    <div class="memory-progress">
+                        <div class="memory-bar">
+                            <div class="memory-fill" id="memoryFill"></div>
+                        </div>
+                        <div class="memory-info">
+                            <span>Memory Test: </span>
+                            <span id="memoryPercent">0%</span>
+                            <span> (</span>
+                            <span id="memorySize">0</span>
+                            <span>MB / 32768MB)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="boot-messages" id="bootMessages">
+                    <div class="message-line">Detecting hardware configuration...</div>
+                </div>
+            </div>
+            
+            <div class="boot-footer">
+                <div class="boot-keys">
+                    <span>F1: Help</span>
+                    <span>F2: BIOS Setup</span>
+                    <span>F8: Boot Menu</span>
+                    <span>DEL: Enter Setup</span>
+                </div>
+                <div class="boot-copyright">
+                    Copyright (C) 2025 ASUSTeK Computer Inc. All Rights Reserved.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bios-container" id="mainContent" style="display: none;">
+        <div class="bios-header">
+            <div class="bios-title">ASUSTeK Computer Inc BIOS v2.4.1</div>
+            <div class="system-info">
+                <span>CPU: Intel Core i7-13700K @ 3.4GHz</span>
+                <span>RAM: 32GB DDR5-5600</span>
+                <span>BOOT: SUCCESS</span>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <div class="nav-item active" data-section="about">
+                <strong>F1</strong> QUEM EU SOU
+            </div>
+            <div class="nav-item" data-section="projects">
+                <strong>F2</strong> PROJETOS
+            </div>
+            <div class="nav-item" data-section="experience">
+                <strong>F3</strong> EXPERIÊNCIA
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <div class="section active" id="about">
+                <div class="profile-section">
+                    <div class="profile-image">
+                                            </div>
+                    <div class="profile-text">
+                        <h2>>>> INICIALIZANDO PERFIL...</h2>
+                        <p><strong>NOME:</strong> Ricardo Fraga de Sousa</p>
+                        <p><strong>CARGO:</strong> Analista Control-M</p>
+                        <p><strong>LOCALIZAÇÃO:</strong> Rio de Janeiro, BR - Brasil</p>
+                        <p><strong>STATUS:</strong> Aberto para oportunidades..</p>
+                        <br>
+                        <p><strong>DESCRIÇÃO:</strong></p>
+                        <p>Com mais de 5 anos de experiência na área de TI e pós-graduação em Segurança da Informação, sou especialista em monitoramento de redes e segurança de rede. Possuo habilidades avançadas em ferramentas como Grafana, Prometheus, Fortinet, Mikrotik e Wireshark, que me permitem identificar problemas de desempenho e garantir a segurança de sua rede de forma proativa e preventiva.
+
+Entendo a importância de manter a segurança da sua rede em dia, pois sabe-se que uma única brecha de segurança pode causar danos irreparáveis à sua empresa. Sou apaixonado por tecnologia e sempre busco manter-me atualizado com as últimas tendências e ferramentas do mercado. Tenho um forte senso de responsabilidade e compromisso com a qualidade do trabalho que realizo, e estou sempre disposto a aprender e crescer profissionalmente.
+
+
+Se você está procurando alguém que possa ajudá-lo a garantir a segurança e otimizar o desempenho de sua rede, entre em contato comigo. Com minha formação em Segurança da Informação posso contribuir ainda mais para o sucesso de sua empresa.<br></br>
+
+With more than 5 years of experience in the IT area and a postgraduate degree in Information Security, I specialize in network monitoring and network security. I have advanced skills in tools such as Grafana, Prometheus, Fortinet, Mikrotik and Wireshark, which allow me to identify performance issues and ensure the security of your network proactively and preventively.
+
+I understand the importance of keeping your network security up to date, as it is known that a single security breach can cause irreparable damage to your company. I am passionate about technology and I always try to keep up to date with the latest trends and tools on the market. I have a strong sense of responsibility and commitment to the quality of the work I do, and I am always willing to learn and grow professionally.
+
+If you're looking for someone who can help you secure and optimize your network's performance, please contact me. With my training in Information Security I can contribute even more to the success of your company.</p>
+                    </div>
+                </div>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h4>EMAIL</h4>
+                        <p>ricardofragadesousa@gmail.com</p>
+                    </div>
+                    <div class="contact-item">
+                        <h4>TELEFONE</h4>
+                        <p>+55 (21) 99703-7674</p>
+                    </div>
+                   <div class="contact-item">
+                        <h4>LINKEDIN</h4>
+                        <p><a href="https://www.linkedin.com/in/ricardofragadesousa/" target="_blank" rel="noopener noreferrer" style="color: #00ff00; text-decoration: underline; word-break: break-all;">https://www.linkedin.com/in/ricardofragadesousa/</a></p>
+                    </div>
+                    <div class="contact-item">
+                        <h4>xx</h4>
+                        <p>xxxxxx</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="projects">
+                <h2>>>> CARREGANDO PROJETOS...</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h3>em breve</h3>
+                        <div class="date">2024 - Atual</div>
+                        <p><strong>Tecnologias:</strong>em breve</p>
+                        <p>em breve</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h3>em breve</h3>
+                        <div class="date">2023 - Atual</div>
+                        <p><strong>Tecnologias:</strong> em breve</p>
+                        <p>em breve</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h3>em breve</h3>
+                        <div class="date">2023</div>
+                        <p><strong>Tecnologias:</strong> em breve</p>
+                        <p>em breve</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h3>em breve</h3>
+                        <div class="date">2022 - 2023</div>
+                        <p><strong>Tecnologias:</strong> em breves</p>
+                        <p>em breve</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="experience">
+                <h2>>>> HISTÓRICO DE EXPERIÊNCIAS...</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h3>Analista Control-M</h3>
+                        <div class="date">2023 - Atual | Solor Infosecurity</div>
+                        <p><strong>Responsabilidades:</strong></p>
+                        <p>• Controle dos Jobs da malha de banco de dados.</p>
+                        <p>• Monitoramento e execução dos JOBSs</p>
+                        <p>• Contato com os DBA's</p>
+                        <p>• Gestão de crises.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h3>Técnico em suporte de TI N1 Cisco</h3>
+                        <div class="date">2023 - 2023 | Solor Infosecurity</div>
+                        <p><strong>Responsabilidades:</strong></p>
+                        <p>• Suporte há switchs Cisco, configuração de VLANs</p>
+                        <p>• Configuração dos firewalls Fortigate.</p>
+                        <p>• Suporte ao cliente YDUQS.</p>
+                        <p>• Ferramenta Service Now.</p>
+                        <p>• Ferramenta Meraki</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h3>Suporte técnico Helpdesk</h3>
+                        <div class="date">2023 - Atual | Montreal Informática</div>
+                        <p><strong>Responsabilidades:</strong></p>
+                        <p>• Suporte técnico aos usuários.</p>
+                        <p>• Instalação e manutenção de software e hardware</p>
+                        <p>• Instalação de impressoras em rede.</p>
+                        <p>• Acesso remoto ao computadores dos servidores para solução de problemas.</p>
+<p>• Configuração do outlook (regras, alertas e config. das contas).</p>
+<p>• Exportação e importação de caixa de e-mails do outlook.</p>
+<p> Suporte técnico á sede do Detran-RJ e todos os postos relacionados ao Detran-RJ.
+ Prestando suporte remoto e presencial N2 aos servidores do estado e outros clientes pelo órgão, realizando configurações nas máquinas dos postos de Habilitação, Identificação Civil, Vistoria, instalando as aplicações responsáveis pelas coletas de dados .</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h3>Analista desenvolvedor de sistemas</h3>
+                        <div class="date">2021 - 2023 | Mistermix Distribuidora</div>
+                        <p><strong>Responsabilidades:</strong></p>
+                        <p>• Migração dos servidores para a virtualização, Virtual box.</p>
+                        <p>• Instalação e manutenção de software e hardware</p>
+                        <p>• Suporte técnico aos usuários</p>
+                        <p>• Configuração de políticas de segurança para usuários do windows serve</p>
+                        <p>• Instalação de impressoras em rede.</p>
+                        <p>• Configuração de roteadores wireless da linha ubiquiti unifi.</p>
+                        <p>• Manutenção do cabeamento da rede (troca dos conectores e cabos).</p>
+                        <p>• Migração dos computadores de DHCP para ip statico, implantação de QOS para                          evitar gargalo na rede, marcação de pacotes e conexões priorizando estes para                          acelerar a abertura das página e serviços utilizados pela empresa.</p>
+                        <p>• Cable management do servidor.</p>
+                        <p>• Implementação do teamviewer e radmin nas estações.</p>
+                        <p>• Configuração do outlook (regras, alertas e config. das contas).</p>
+                        <p>• Exportação e importação de caixa de e-mails do outlook.</p>
+                        <p>• Manutenção e administração do site da empresa, plataforma squarespace.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bios-footer">
+            <div class="system-status">
+                <div class="status-item">
+                    <div class="status-led"></div>
+                    <span>SISTEMA OPERACIONAL</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-led"></div>
+                    <span>REDE CONECTADA</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-led"></div>
+                    <span>DADOS CARREGADOS</span>
+                </div>
+            </div>
+            <div style="margin-top: 10px; font-size: 12px;">
+                Pressione F1-F3 para navegar | ESC para sair | CTRL+ALT+DEL para reiniciar
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Boot Sequence
+        function startBootSequence() {
+            const bootMessages = [
+                'Detecting hardware configuration...',
+                'Initializing CPU cores...',
+                'Testing system memory...',
+                'Checking storage devices...',
+                'Initializing graphics subsystem...',
+                'Configuring network interface...',
+                'Loading USB drivers...',
+                'Verifying system integrity...',
+                'Preparing user interface...',
+                'Boot sequence complete!'
+            ];
+            
+            const statusElements = [
+                { id: 'initStatus', delay: 1000 },
+                { id: 'cpuStatus', delay: 2000 },
+                { id: 'memStatus', delay: 3500 },
+                { id: 'storageStatus', delay: 4500 },
+                { id: 'gpuStatus', delay: 5500 },
+                { id: 'networkStatus', delay: 6500 },
+                { id: 'usbStatus', delay: 7500 }
+            ];
+            
+            const messagesContainer = document.getElementById('bootMessages');
+            let messageIndex = 0;
+            
+            // Add boot messages
+            const messageInterval = setInterval(() => {
+                if (messageIndex < bootMessages.length) {
+                    const messageLine = document.createElement('div');
+                    messageLine.className = 'message-line';
+                    messageLine.textContent = bootMessages[messageIndex];
+                    messagesContainer.appendChild(messageLine);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    messageIndex++;
+                } else {
+                    clearInterval(messageInterval);
+                }
+            }, 800);
+            
+            // Memory test animation
+            setTimeout(() => {
+                startMemoryTest();
+            }, 2500);
+            
+            // Update status indicators
+            statusElements.forEach(status => {
+                setTimeout(() => {
+                    const element = document.getElementById(status.id);
+                    element.textContent = '[  OK  ]';
+                    element.className = 'boot-status ok';
+                }, status.delay);
+            });
+            
+            // Start main content after boot
+            setTimeout(() => {
+                document.getElementById('bootScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Initialize main content
+                initializeMainContent();
+            }, 9000);
+        }
+        
+        function startMemoryTest() {
+            const memoryFill = document.getElementById('memoryFill');
+            const memoryPercent = document.getElementById('memoryPercent');
+            const memorySize = document.getElementById('memorySize');
+            
+            let progress = 0;
+            const maxMemory = 32768; // 32GB in MB
+            
+            const memoryInterval = setInterval(() => {
+                progress += Math.random() * 8 + 2; // Random increment between 2-10
+                
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(memoryInterval);
+                }
+                
+                const currentMemory = Math.floor((progress / 100) * maxMemory);
+                
+                memoryFill.style.width = progress + '%';
+                memoryPercent.textContent = Math.floor(progress) + '%';
+                memorySize.textContent = currentMemory.toLocaleString();
+            }, 100);
+        }
+        
+        function initializeMainContent() {
+            // Apply typing effect to the first section
+            const firstH2 = document.querySelector('#about h2');
+            if (firstH2) {
+                const originalText = firstH2.textContent;
+                typeWriter(firstH2, originalText, 50);
+            }
+        }
+        
+        // Start boot sequence when page loads
+        window.addEventListener('load', () => {
+            startBootSequence();
+        });
+        
+        // Cursor personalizado
+        const cursor = document.querySelector('.cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        
+        // Navegação
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.section');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const sectionId = item.dataset.section;
+                
+                // Remove active das abas
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Remove active das seções
+                sections.forEach(section => section.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+        
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'F1':
+                    e.preventDefault();
+                    document.querySelector('[data-section="about"]').click();
+                    break;
+                case 'F2':
+                    e.preventDefault();
+                    document.querySelector('[data-section="projects"]').click();
+                    break;
+                case 'F3':
+                    e.preventDefault();
+                    document.querySelector('[data-section="experience"]').click();
+                    break;
+                case 'Escape':
+                    if (confirm('Deseja realmente sair do sistema?')) {
+                        window.close();
+                    }
+                    break;
+            }
+        });
+        
+        // Efeito de digitação para títulos
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.innerHTML = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+        
+        // Aplicar efeito de digitação quando seção é ativada
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const section = mutation.target;
+                    if (section.classList.contains('active')) {
+                        const h2 = section.querySelector('h2');
+                        if (h2) {
+                            const originalText = h2.textContent;
+                            typeWriter(h2, originalText, 50);
+                        }
+                    }
+                }
+            });
+        });
+        
+        sections.forEach(section => {
+            observer.observe(section, { attributes: true });
+        });
+        
+        // Skip boot sequence on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('bootScreen').style.display !== 'none') {
+                document.getElementById('bootScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                initializeMainContent();
+            }
+        });
+    </script>
+</body>
+</html>
